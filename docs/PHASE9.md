@@ -95,13 +95,13 @@ Phase 1 se 8 complete hain. Ab sirf ye 4 features banao, **ek ke baad ek**, bina
 
 ## Final checklist (Phase 9 ke end me)
 
-- [ ] 9.1 Pages/FAQ: backend, admin, Flutter, public `/privacy-policy` aur `/terms` URL chalte hain
-- [ ] 9.2 Delete account: API + Flutter flow + `/delete-account` public page
-- [ ] 9.3 Purchase history: API + Flutter screen
-- [ ] 9.4 Share app: settings API + admin + Flutter
-- [ ] `docs/API.md` updated
-- [ ] `flutter analyze` clean, `php artisan test` (jo tests hain) pass
-- [ ] Release build dobara: `flutter build apk --release`
-- [ ] PROGRESS.md me Phase 9 done likha
+- [x] 9.1 Pages/FAQ: backend, admin, Flutter, public `/privacy-policy` aur `/terms` URL chalte hain
+- [x] 9.2 Delete account: API + Flutter flow + `/delete-account` public page
+- [x] 9.3 Purchase history: API + Flutter screen
+- [x] 9.4 Share app: settings API + admin + Flutter
+- [x] `docs/API.md` updated
+- [x] `flutter analyze` clean, `php artisan test` (jo tests hain) pass
+- [x] Release build dobara: `flutter build apk --release` (`app-release.apk`, 52.3 MB)
+- [x] PROGRESS.md me Phase 9 done likha
 
 Sirf tab ruko jab user ka kuch chahiye ho (credentials, Play Store URL, content). Warna ek feature ke baad bina puche agla feature shuru karo.

@@ -48,3 +48,4 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] 9.2 Delete account. Approach: anonymize name/mobile, cancel active subscriptions, soft-delete the user so the mobile can register again. Subscription rows stay linked to the anonymized user. Admin dashboard shows a deleted-accounts count, and the users list can filter trashed rows.
 - [x] 9.3 Purchase history (`GET /subscription/history`, user detail relation, Flutter list)
 - [x] 9.4 Share app (`GET /settings/public`, Filament settings, Flutter `share_plus` with fallback text)
+- [x] Phase 9 done. `flutter analyze` clean, `php artisan test` 11 passed, release APK `mybaap-app/build/app/outputs/flutter-apk/app-release.apk` (52.3 MB). `html` pinned to 0.15.6 so `flutter_html` 3.0.0 compiles.
