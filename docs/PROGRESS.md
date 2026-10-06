@@ -42,3 +42,9 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] Security review: auth bypass, `playback_path` leak, missing validations. Sab fix karo.
 - [x] Release signing config, `flutter build apk --release` / `appbundle`
 - [x] `README.md` me setup + run steps
+
+## Phase 9: Extra features
+- [x] 9.1 Static pages / FAQ (API, Filament, Flutter, `/privacy-policy`, `/terms`)
+- [ ] 9.2 Delete account
+- [ ] 9.3 Purchase history
+- [ ] 9.4 Share app

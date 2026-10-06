@@ -63,6 +63,10 @@ class _HomeViewState extends State<HomeView> {
         title: const Text('MyBaap', style: TextStyle(fontFamily: FontsStyle.bold, color: ColorConstant.primaryCl)),
         actions: [
           IconButton(
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.account),
+            icon: const Icon(Icons.person_outline),
+          ),
+          IconButton(
             onPressed: () async {
               await auth.logout();
               if (!context.mounted) return;

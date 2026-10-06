@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Admin;
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\Faq;
+use App\Models\Page;
 use App\Models\SubscriptionPlan;
 use App\Models\Video;
 use Illuminate\Database\Seeder;
@@ -111,6 +113,39 @@ class DatabaseSeeder extends Seeder
                     'is_active' => true,
                     'sort_order' => $row['sort'],
                 ],
+            );
+        }
+
+        Page::query()->updateOrCreate(
+            ['slug' => 'privacy-policy'],
+            [
+                'title' => 'Privacy Policy',
+                'content' => '<p>MyBaap stores your mobile number and name so you can sign in and watch videos. Playback files stay on the server. We do not sell your personal data.</p>',
+                'is_active' => true,
+            ],
+        );
+
+        Page::query()->updateOrCreate(
+            ['slug' => 'terms'],
+            [
+                'title' => 'Terms of Use',
+                'content' => '<p>Paid videos need an active subscription. A subscription lasts until its end date. Local payments are a placeholder until a gateway is connected.</p>',
+                'is_active' => true,
+            ],
+        );
+
+        $faqs = [
+            ['How do I sign in?', 'Enter your 10 digit mobile number and the 6 digit OTP.', 1],
+            ['Which videos are free?', 'Videos marked Free play without a subscription.', 2],
+            ['Why is a video locked?', 'Paid videos stay locked until your subscription is active.', 3],
+            ['How long does a plan last?', 'Monthly is 30 days and Yearly is 365 days from the start date.', 4],
+            ['Can I change my name?', 'Open your profile from Home and edit the name.', 5],
+        ];
+
+        foreach ($faqs as [$question, $answer, $sort]) {
+            Faq::query()->updateOrCreate(
+                ['question' => $question],
+                ['answer' => $answer, 'sort_order' => $sort, 'is_active' => true],
             );
         }
     }

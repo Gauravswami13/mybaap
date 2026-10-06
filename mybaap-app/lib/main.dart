@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mybaap/core/theme/app_theme.dart';
+import 'package:mybaap/modules/account/views/account_view.dart';
 import 'package:mybaap/modules/auth/providers/auth_provider.dart';
 import 'package:mybaap/modules/auth/views/mobile_view.dart';
 import 'package:mybaap/modules/auth/views/otp_view.dart';
 import 'package:mybaap/modules/auth/views/splash_view.dart';
+import 'package:mybaap/modules/help/providers/content_provider.dart';
+import 'package:mybaap/modules/help/views/cms_page_view.dart';
+import 'package:mybaap/modules/help/views/faq_view.dart';
 import 'package:mybaap/modules/home/models/catalog_models.dart';
 import 'package:mybaap/modules/home/providers/home_provider.dart';
 import 'package:mybaap/modules/home/views/home_view.dart';
@@ -35,6 +39,7 @@ class MyBaapApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider(api, tokenStore)),
         ChangeNotifierProvider(create: (_) => HomeProvider(api)),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider(api)),
+        ChangeNotifierProvider(create: (_) => ContentProvider(api)),
       ],
       child: MaterialApp(
         title: 'MyBaap',
@@ -56,6 +61,13 @@ class MyBaapApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => PlayerView(video: video));
             case AppRoutes.subscription:
               return MaterialPageRoute(builder: (_) => const SubscriptionView());
+            case AppRoutes.account:
+              return MaterialPageRoute(builder: (_) => const AccountView());
+            case AppRoutes.page:
+              final slug = settings.arguments as String? ?? '';
+              return MaterialPageRoute(builder: (_) => CmsPageView(slug: slug));
+            case AppRoutes.faq:
+              return MaterialPageRoute(builder: (_) => const FaqView());
             case AppRoutes.splash:
             default:
               return MaterialPageRoute(builder: (_) => const SplashView());

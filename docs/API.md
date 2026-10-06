@@ -203,6 +203,30 @@ No bearer token. Header `X-Webhook-Signature` is HMAC-SHA256 of the raw body usi
 
 `200` activates or extends the user's subscription. The same `payment_ref` is idempotent. `401` when the signature is wrong.
 
+## Pages and FAQ
+
+Public. No bearer token. Disabled pages and FAQs are omitted.
+
+### GET /pages/{slug}
+
+Slugs: `privacy-policy`, `terms`.
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": { "slug": "privacy-policy", "title": "Privacy Policy", "content": "<p>...</p>" }
+}
+```
+
+`404` when the slug is missing or inactive.
+
+Browser pages for Play Console: `GET /privacy-policy` and `GET /terms`.
+
+### GET /faqs
+
+`data` is an array of `{ id, question, answer, sort_order }`, ordered by `sort_order`.
+
 ## Admin
 
 Web panel: `http://127.0.0.1:8000/admin`

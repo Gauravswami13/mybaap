@@ -2,11 +2,15 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\PaymentWebhookController;
 use App\Http\Controllers\Api\PlaybackController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/pages/{slug}', [ContentController::class, 'page'])->where('slug', '[a-z0-9\-]+');
+Route::get('/faqs', [ContentController::class, 'faqs']);
 
 Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:send-otp');
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp'])->middleware('throttle:verify-otp');

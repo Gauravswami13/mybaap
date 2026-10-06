@@ -9,4 +9,7 @@ class AppRoutes {
   static const home = '/home';
   static const player = '/player';
   static const subscription = '/subscription';
+  static const account = '/account';
+  static const page = '/page';
+  static const faq = '/faq';
 }
