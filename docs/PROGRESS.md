@@ -18,9 +18,9 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [ ] home, categories, videos list, video detail (`locked` flag), plans, subscription
 
 ## Phase 4: Subscription + secure playback
-- [ ] Active-subscription service
-- [ ] `GET /videos/{id}/playback` signed short-lived URL
-- [ ] `POST /payments/webhook` stub
+- [x] Active-subscription service
+- [x] `GET /videos/{id}/playback` signed short-lived URL
+- [x] `POST /payments/webhook` stub
 
 ## Phase 5: Admin panel (Filament)
 - [ ] Admin login, dashboard counts
