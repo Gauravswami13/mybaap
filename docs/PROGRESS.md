@@ -15,7 +15,7 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] Rate limit, FormRequests, ApiResponse helper
 
 ## Phase 3: Content APIs
-- [ ] home, categories, videos list, video detail (`locked` flag), plans, subscription
+- [x] home, categories, videos list, video detail (`locked` flag), plans, subscription
 
 ## Phase 4: Subscription + secure playback
 - [x] Active-subscription service
@@ -23,9 +23,9 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] `POST /payments/webhook` stub
 
 ## Phase 5: Admin panel (Filament)
-- [ ] Admin login, dashboard counts
-- [ ] CRUD: categories, videos, banners, plans
-- [ ] Users (block/unblock), user subscriptions (manual activate/extend/cancel)
+- [x] Admin login, dashboard counts
+- [x] CRUD: categories, videos, banners, plans
+- [x] Users (block/unblock), user subscriptions (manual activate/extend/cancel)
 
 ## Phase 6: API docs
 - [ ] `docs/API.md` generate karo (endpoints, request/response examples). Backend ko `php artisan serve --host=0.0.0.0` se test karke verify karo.

@@ -63,4 +63,36 @@ class SubscriptionService
             'payment_ref' => $paymentRef,
         ])->load('plan');
     }
+
+    public function manualActivate(UserSubscription $subscription): void
+    {
+        $days = (int) ($subscription->plan?->duration_days ?? 30);
+        if ($subscription->end_date === null || $subscription->end_date->lt(today())) {
+            $subscription->start_date = today();
+            $subscription->end_date = today()->addDays($days);
+        }
+        $subscription->status = UserSubscription::STATUS_ACTIVE;
+        $subscription->save();
+    }
+
+    public function extend(UserSubscription $subscription): void
+    {
+        $days = (int) ($subscription->plan?->duration_days ?? 30);
+        $base = $subscription->end_date && $subscription->end_date->gte(today())
+            ? $subscription->end_date->copy()
+            : today();
+
+        $subscription->forceFill([
+            'status' => UserSubscription::STATUS_ACTIVE,
+            'start_date' => $subscription->start_date ?? today()->toDateString(),
+            'end_date' => $base->addDays($days)->toDateString(),
+        ])->save();
+    }
+
+    public function cancel(UserSubscription $subscription): void
+    {
+        $subscription->update([
+            'status' => UserSubscription::STATUS_CANCELLED,
+        ]);
+    }
 }
