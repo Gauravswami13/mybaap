@@ -14,6 +14,7 @@ class DashboardStats extends StatsOverviewWidget
     {
         return [
             Stat::make('Users', (string) User::query()->count()),
+            Stat::make('Deleted accounts', (string) User::onlyTrashed()->count()),
             Stat::make('Active subscriptions', (string) UserSubscription::query()
                 ->where('status', UserSubscription::STATUS_ACTIVE)
                 ->whereDate('end_date', '>=', today())

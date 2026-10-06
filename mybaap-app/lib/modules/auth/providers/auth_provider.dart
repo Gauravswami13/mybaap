@@ -57,6 +57,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteAccount() async {
+    await _run(() => api.delete('/account', body: {'confirm': true}));
+    await tokenStore.clear();
+    user = null;
+    subscription = const SubscriptionStatus(isActive: false);
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     try {
       await api.post('/auth/logout');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\ContentController;
@@ -19,6 +20,8 @@ Route::get('/media/videos/{id}', [PlaybackController::class, 'stream'])
     ->middleware('signed')
     ->whereNumber('id')
     ->name('videos.stream');
+
+Route::delete('/account', [AccountController::class, 'destroy'])->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);

@@ -6,6 +6,7 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -20,10 +21,16 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => $state === User::STATUS_BLOCKED ? 'danger' : 'success'),
+                    ->color(fn (string $state): string => match ($state) {
+                        User::STATUS_BLOCKED, User::STATUS_DELETED => 'danger',
+                        default => 'success',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
+            ])
+            ->filters([
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 Action::make('block')

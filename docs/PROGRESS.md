@@ -45,6 +45,7 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 
 ## Phase 9: Extra features
 - [x] 9.1 Static pages / FAQ (API, Filament, Flutter, `/privacy-policy`, `/terms`)
-- [ ] 9.2 Delete account
+- [x] 9.2 Delete account. Approach: anonymize name/mobile, cancel active subscriptions, soft-delete the user so the mobile can register again. Subscription rows stay linked to the anonymized user. Admin dashboard shows a deleted-accounts count, and the users list can filter trashed rows.
+- [ ] 9.3 Purchase history
 - [ ] 9.3 Purchase history
 - [ ] 9.4 Share app

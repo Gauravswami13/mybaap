@@ -58,6 +58,10 @@ class ApiClient {
     return _send(() => dio.put(path, data: body));
   }
 
+  Future<dynamic> delete(String path, {Map<String, dynamic>? body}) async {
+    return _send(() => dio.delete(path, data: body));
+  }
+
   Future<dynamic> _send(Future<Response<dynamic>> Function() call) async {
     try {
       final response = await call();

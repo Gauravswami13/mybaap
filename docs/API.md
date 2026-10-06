@@ -203,6 +203,20 @@ No bearer token. Header `X-Webhook-Signature` is HMAC-SHA256 of the raw body usi
 
 `200` activates or extends the user's subscription. The same `payment_ref` is idempotent. `401` when the signature is wrong.
 
+## Account
+
+### DELETE /account
+
+Auth required. Blocked users can still delete their account.
+
+```json
+{ "confirm": true }
+```
+
+`200` revokes tokens, deletes OTPs for that mobile, cancels active subscriptions, anonymizes the name and mobile, and soft-deletes the user. The same mobile can register again. `422` when `confirm` is missing.
+
+Play Console URL: `GET /delete-account` (instructions only).
+
 ## Pages and FAQ
 
 Public. No bearer token. Disabled pages and FAQs are omitted.
