@@ -28,7 +28,7 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] Users (block/unblock), user subscriptions (manual activate/extend/cancel)
 
 ## Phase 6: API docs
-- [ ] `docs/API.md` generate karo (endpoints, request/response examples). Backend ko `php artisan serve --host=0.0.0.0` se test karke verify karo.
+- [x] `docs/API.md` generate karo (endpoints, request/response examples). Backend ko `php artisan serve --host=0.0.0.0` se test karke verify karo.
 
 ## Phase 7: Flutter app (`mybaap-app`)
 - [ ] Project setup, folder structure, Dio + token interceptor, Provider, theme, routes
