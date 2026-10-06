@@ -1,0 +1,69 @@
+---
+description: MyBaap project rules (Laravel backend + Flutter app)
+alwaysApply: true
+---
+
+# MyBaap: secure paid-video subscription app (Android only)
+
+Full requirements: @docs/PRD.md. Har naya kaam shuru karne se pehle isse padho.
+Flutter ke kaam me API reference: @docs/API.md
+
+## Stack
+- Backend: Laravel 11, PHP 8.2+, Sanctum token auth, MySQL, Filament admin panel
+- App: Flutter (Android), Provider state management, Dio for networking
+- Backend folder: `mybaap-backend`, app folder: `mybaap-app`
+
+## General rules
+- Complete files do, partial snippets ya "rest same as before" nahi.
+- Ek baar me ek hi module/feature banao. Bina bole scope badhana mat.
+- PRD me jo nahi hai wo add mat karo (iOS, public upload, real payment gateway, extra roles).
+- Naya package add karne se pehle bata do kyun chahiye.
+- Kaam ke baad batao: kaunsi files bani/badli, aur kaise test karna hai.
+
+## Laravel rules
+- API prefix `/api/v1`. Sab protected routes `auth:sanctum` ke peeche.
+- Har response ka format: `{ "success": bool, "message": string, "data": mixed }`. Ek `ApiResponse` trait/helper use karo.
+- Validation hamesha FormRequest classes me, controllers me nahi.
+- Business logic Service classes me, controllers patle rakho.
+- API responses ke liye Eloquent API Resources use karo, raw models return mat karo.
+- OTP: 6 digit, 5 min expiry, hashed store, max 5 attempts, rate limit.
+- SMS `SmsProviderInterface` ke peeche rakho. Abhi `LogSmsProvider`. Local/debug me fixed OTP `123456`, production me kabhi nahi.
+- Naye tables ke liye migrations me proper foreign keys aur indexes.
+- Admin panel Filament me; admin ka alag guard.
+- Disabled (`is_active = false`) category/video/banner/plan API me kabhi nahi aane chahiye.
+
+## Security rules (non-negotiable)
+- Video ka `playback_path` ya direct file URL kisi bhi API response me kabhi expose nahi karna.
+- Playback sirf `GET /videos/{id}/playback` se, auth + entitlement check ke baad, short-lived (5 min) signed URL ke roop me.
+- `locked = video.is_paid && !user.hasActiveSubscription()`. Active subscription = status active AND end_date >= today.
+- Blocked user ke saare API calls 403.
+- Secrets hardcode mat karo, sirf `.env`.
+- Auth, payment, subscription code me extra dhyan: har endpoint par authorization check.
+
+## Flutter rules
+- Folder structure: `lib/core` (constants, theme, network, utils), `lib/data` (models, repositories), `lib/presentation` (screens, widgets, providers).
+- State management: Provider (ChangeNotifier). Business logic widgets me nahi.
+- Networking: ek Dio client, interceptor se Bearer token lagao, 401 par logout + login screen.
+- Token `flutter_secure_storage` me.
+- Har screen par loading, error (retry ke saath) aur empty state.
+- Models me `fromJson` / `toJson`, null-safety follow karo.
+- Paid video par lock icon; tap par subscription screen. Free video seedha play.
+- Player: `video_player` + `chewie`. Playback URL har baar fresh API se lo, cache mat karo.
+- Hardcoded strings/URLs nahi: base URL ek config file me.
+- `flutter analyze` clean rehna chahiye.
+
+## Cursor workflow (AUTONOMOUS MODE)
+- User beginner hai. Zyada sawal mat pucho, khud decide karo jahan PRD clear hai.
+- @docs/PRD.md ka section 12 "Autonomous Build Plan" follow karo: Phase 1 se Phase 8 tak, ek ke baad ek, **bina beech me ruke**.
+- Shuru karne se pehle `docs/PROGRESS.md` check karo (na ho to banao). Jo phase pehle se `[x]` hai use dobara mat karo, wahin se aage badho.
+- Har phase ke baad: test karo, PROGRESS.md update karo, `git commit -m "Phase N done"`, phir agla phase.
+- Terminal commands khud chalao (composer, artisan, flutter). Error aaye to padho aur khud fix karo.
+- Sirf ruko jab: user ka kuch chahiye (credentials, content, decision) ya error 2 baar fix ke baad bhi na jaye.
+- Har phase ke end me user ko 3-4 line Hinglish me batao: kya bana, kaise check karna hai (kaunsa URL/command).
+- Plan pehle, code baad me: bada kaam ho to pehle 3-5 line ka plan do.
+- Existing code ka style aur naming follow karo.
+
+## Environment (Windows + XAMPP)
+- MySQL XAMPP me: user `root`, password blank, database `mybaap_db`.
+- DB create: `C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS mybaap_db CHARACTER SET utf8mb4;"`
+- Flutter installed hai. Backend local run: `php artisan serve`.
