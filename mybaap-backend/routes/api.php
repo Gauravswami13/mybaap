@@ -7,9 +7,11 @@ use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\PaymentWebhookController;
 use App\Http\Controllers\Api\PlaybackController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/settings/public', [SettingsController::class, 'show']);
 Route::get('/pages/{slug}', [ContentController::class, 'page'])->where('slug', '[a-z0-9\-]+');
 Route::get('/faqs', [ContentController::class, 'faqs']);
 

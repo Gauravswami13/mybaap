@@ -231,6 +231,25 @@ No bearer token. Header `X-Webhook-Signature` is HMAC-SHA256 of the raw body usi
 
 `200` activates or extends the user's subscription. The same `payment_ref` is idempotent. `401` when the signature is wrong.
 
+## Public settings
+
+### GET /settings/public
+
+No token. Used by Share App.
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {
+    "app_share_text": "Watch videos on MyBaap.",
+    "play_store_url": "https://play.google.com/store/apps/details?id=com.mybaap.mybaap"
+  }
+}
+```
+
+Admin edits both values at `/admin/manage-app-settings`.
+
 ## Account
 
 ### DELETE /account

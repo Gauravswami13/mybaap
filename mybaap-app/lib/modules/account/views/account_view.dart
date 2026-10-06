@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mybaap/core/color_constant.dart';
 import 'package:mybaap/core/fonts_styles.dart';
+import 'package:mybaap/modules/account/providers/share_provider.dart';
 import 'package:mybaap/modules/auth/providers/auth_provider.dart';
 import 'package:mybaap/routes/app_routes.dart';
 import 'package:mybaap/services/api_client.dart';
@@ -25,6 +26,7 @@ class AccountView extends StatelessWidget {
           _tile(context, 'Terms', () => Navigator.pushNamed(context, AppRoutes.page, arguments: 'terms')),
           _tile(context, 'FAQ', () => Navigator.pushNamed(context, AppRoutes.faq)),
           _tile(context, 'Purchase History', () => Navigator.pushNamed(context, AppRoutes.purchases)),
+          _tile(context, 'Share App', () => context.read<ShareProvider>().shareApp()),
           const SizedBox(height: 24),
           ListTile(
             title: const Text('Delete Account', style: TextStyle(fontFamily: FontsStyle.medium, color: ColorConstant.errorCl)),

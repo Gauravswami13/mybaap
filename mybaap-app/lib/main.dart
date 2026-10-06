@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mybaap/core/theme/app_theme.dart';
+import 'package:mybaap/modules/account/providers/share_provider.dart';
 import 'package:mybaap/modules/account/views/account_view.dart';
 import 'package:mybaap/modules/auth/providers/auth_provider.dart';
 import 'package:mybaap/modules/auth/views/mobile_view.dart';
@@ -43,6 +44,7 @@ class MyBaapApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider(api)),
         ChangeNotifierProvider(create: (_) => PurchaseHistoryProvider(api)),
         ChangeNotifierProvider(create: (_) => ContentProvider(api)),
+        ChangeNotifierProvider(create: (_) => ShareProvider(api)),
       ],
       child: MaterialApp(
         title: 'MyBaap',

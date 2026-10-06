@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\AppSetting;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Faq;
@@ -141,6 +142,15 @@ class DatabaseSeeder extends Seeder
             ['How long does a plan last?', 'Monthly is 30 days and Yearly is 365 days from the start date.', 4],
             ['Can I change my name?', 'Open your profile from Home and edit the name.', 5],
         ];
+
+        AppSetting::query()->firstOrCreate(
+            ['key' => AppSetting::SHARE_TEXT],
+            ['value' => AppSetting::DEFAULT_SHARE_TEXT],
+        );
+        AppSetting::query()->firstOrCreate(
+            ['key' => AppSetting::PLAY_STORE_URL],
+            ['value' => AppSetting::DEFAULT_PLAY_STORE_URL],
+        );
 
         foreach ($faqs as [$question, $answer, $sort]) {
             Faq::query()->updateOrCreate(
