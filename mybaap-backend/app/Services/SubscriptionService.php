@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\UserSubscription;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 
@@ -18,6 +19,16 @@ class SubscriptionService
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
+    }
+
+    public function history(User $user, int $perPage = 15): LengthAwarePaginator
+    {
+        $perPage = max(1, min($perPage, 50));
+
+        return $user->subscriptions()
+            ->with('plan')
+            ->orderByDesc('id')
+            ->paginate($perPage);
     }
 
     public function current(User $user): ?UserSubscription

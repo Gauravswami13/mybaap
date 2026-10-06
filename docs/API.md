@@ -160,6 +160,34 @@ Query: `category_id` (optional), `page` (optional).
 
 `data` is an array of active plans: `id`, `name`, `price`, `duration_days`, `description`, `sort_order`.
 
+### GET /subscription/history
+
+Auth required. Paginated, latest first, only the signed-in user's rows.
+
+Query: `page`, `per_page` (1–50, default 15).
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "plan_name": "Monthly",
+        "price": "99.00",
+        "start_date": "2026-10-06",
+        "end_date": "2026-11-05",
+        "status": "active",
+        "payment_ref": "pay_1",
+        "created_at": "2026-10-06T12:00:00+00:00"
+      }
+    ],
+    "pagination": { "current_page": 1, "last_page": 1, "per_page": 15, "total": 1 }
+  }
+}
+```
+
 ### GET /subscription
 
 ```json

@@ -21,6 +21,21 @@ class SubscriptionController extends Controller
         return $this->ok(SubscriptionPlanResource::collection($this->subscriptions->plans()));
     }
 
+    public function history(Request $request): JsonResponse
+    {
+        $page = $this->subscriptions->history($request->user(), (int) $request->integer('per_page', 15));
+
+        return $this->ok([
+            'items' => UserSubscriptionResource::collection($page->items())->resolve(),
+            'pagination' => [
+                'current_page' => $page->currentPage(),
+                'last_page' => $page->lastPage(),
+                'per_page' => $page->perPage(),
+                'total' => $page->total(),
+            ],
+        ]);
+    }
+
     public function current(Request $request): JsonResponse
     {
         $subscription = $this->subscriptions->current($request->user());

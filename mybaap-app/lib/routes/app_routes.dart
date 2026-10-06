@@ -12,4 +12,5 @@ class AppRoutes {
   static const account = '/account';
   static const page = '/page';
   static const faq = '/faq';
+  static const purchases = '/purchases';
 }

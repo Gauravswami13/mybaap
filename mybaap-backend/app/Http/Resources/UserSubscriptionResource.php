@@ -14,10 +14,12 @@ class UserSubscriptionResource extends JsonResource
             'id' => $this->id,
             'plan_id' => $this->plan_id,
             'plan_name' => $this->plan?->name,
+            'price' => $this->plan?->price,
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
             'status' => $this->status,
             'payment_ref' => $this->payment_ref,
+            'created_at' => $this->created_at?->toIso8601String(),
             'is_active' => $this->isCurrentlyActive(),
         ];
     }

@@ -24,6 +24,7 @@ class AccountView extends StatelessWidget {
           _tile(context, 'Privacy Policy', () => Navigator.pushNamed(context, AppRoutes.page, arguments: 'privacy-policy')),
           _tile(context, 'Terms', () => Navigator.pushNamed(context, AppRoutes.page, arguments: 'terms')),
           _tile(context, 'FAQ', () => Navigator.pushNamed(context, AppRoutes.faq)),
+          _tile(context, 'Purchase History', () => Navigator.pushNamed(context, AppRoutes.purchases)),
           const SizedBox(height: 24),
           ListTile(
             title: const Text('Delete Account', style: TextStyle(fontFamily: FontsStyle.medium, color: ColorConstant.errorCl)),

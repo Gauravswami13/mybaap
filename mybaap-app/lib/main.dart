@@ -12,7 +12,9 @@ import 'package:mybaap/modules/home/models/catalog_models.dart';
 import 'package:mybaap/modules/home/providers/home_provider.dart';
 import 'package:mybaap/modules/home/views/home_view.dart';
 import 'package:mybaap/modules/player/views/player_view.dart';
+import 'package:mybaap/modules/subscription/providers/purchase_history_provider.dart';
 import 'package:mybaap/modules/subscription/providers/subscription_provider.dart';
+import 'package:mybaap/modules/subscription/views/purchase_history_view.dart';
 import 'package:mybaap/modules/subscription/views/subscription_view.dart';
 import 'package:mybaap/routes/app_routes.dart';
 import 'package:mybaap/services/api_client.dart';
@@ -39,6 +41,7 @@ class MyBaapApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider(api, tokenStore)),
         ChangeNotifierProvider(create: (_) => HomeProvider(api)),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider(api)),
+        ChangeNotifierProvider(create: (_) => PurchaseHistoryProvider(api)),
         ChangeNotifierProvider(create: (_) => ContentProvider(api)),
       ],
       child: MaterialApp(
@@ -68,6 +71,8 @@ class MyBaapApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => CmsPageView(slug: slug));
             case AppRoutes.faq:
               return MaterialPageRoute(builder: (_) => const FaqView());
+            case AppRoutes.purchases:
+              return MaterialPageRoute(builder: (_) => const PurchaseHistoryView());
             case AppRoutes.splash:
             default:
               return MaterialPageRoute(builder: (_) => const SplashView());

@@ -36,4 +36,5 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
     Route::get('/plans', [SubscriptionController::class, 'plans']);
     Route::get('/subscription', [SubscriptionController::class, 'current']);
+    Route::get('/subscription/history', [SubscriptionController::class, 'history']);
 });
