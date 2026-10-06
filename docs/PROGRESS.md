@@ -39,6 +39,6 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] Loading/error/empty states, `flutter analyze` clean
 
 ## Phase 8: QA + release
-- [ ] Security review: auth bypass, `playback_path` leak, missing validations. Sab fix karo.
-- [ ] Release signing config, `flutter build apk --release` / `appbundle`
-- [ ] `README.md` me setup + run steps
+- [x] Security review: auth bypass, `playback_path` leak, missing validations. Sab fix karo.
+- [x] Release signing config, `flutter build apk --release` / `appbundle`
+- [x] `README.md` me setup + run steps

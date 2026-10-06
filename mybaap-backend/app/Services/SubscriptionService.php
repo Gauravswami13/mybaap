@@ -7,6 +7,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\UserSubscription;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 
 class SubscriptionService
 {
@@ -34,6 +35,10 @@ class SubscriptionService
         if ($paymentRef) {
             $existing = UserSubscription::query()->where('payment_ref', $paymentRef)->first();
             if ($existing) {
+                if ($existing->user_id !== $user->id) {
+                    throw new ApiException('Payment reference is already used.', 409);
+                }
+
                 return $existing->load('plan');
             }
         }
@@ -43,25 +48,33 @@ class SubscriptionService
         }
 
         $current = $this->current($user);
-        if ($current) {
-            $current->forceFill([
+        try {
+            if ($current) {
+                $current->forceFill([
+                    'plan_id' => $plan->id,
+                    'end_date' => $current->end_date->copy()->addDays($plan->duration_days)->toDateString(),
+                    'status' => UserSubscription::STATUS_ACTIVE,
+                    'payment_ref' => $paymentRef,
+                ])->save();
+
+                return $current->load('plan');
+            }
+
+            return UserSubscription::query()->create([
+                'user_id' => $user->id,
                 'plan_id' => $plan->id,
-                'end_date' => $current->end_date->copy()->addDays($plan->duration_days)->toDateString(),
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays($plan->duration_days)->toDateString(),
                 'status' => UserSubscription::STATUS_ACTIVE,
                 'payment_ref' => $paymentRef,
-            ])->save();
+            ])->load('plan');
+        } catch (QueryException $exception) {
+            if ((int) ($exception->errorInfo[1] ?? 0) === 1062 || str_contains($exception->getMessage(), 'UNIQUE')) {
+                throw new ApiException('Payment reference is already used.', 409);
+            }
 
-            return $current->load('plan');
+            throw $exception;
         }
-
-        return UserSubscription::query()->create([
-            'user_id' => $user->id,
-            'plan_id' => $plan->id,
-            'start_date' => now()->toDateString(),
-            'end_date' => now()->addDays($plan->duration_days)->toDateString(),
-            'status' => UserSubscription::STATUS_ACTIVE,
-            'payment_ref' => $paymentRef,
-        ])->load('plan');
     }
 
     public function manualActivate(UserSubscription $subscription): void

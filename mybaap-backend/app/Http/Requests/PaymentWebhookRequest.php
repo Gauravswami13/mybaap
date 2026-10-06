@@ -22,7 +22,7 @@ class PaymentWebhookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mobile' => ['required', 'digits:10'],
+            'mobile' => ['required', 'digits:10', 'regex:/^[6-9][0-9]{9}$/'],
             'plan_id' => ['required', 'integer', 'exists:subscription_plans,id'],
             'payment_ref' => ['required', 'string', 'max:120'],
         ];

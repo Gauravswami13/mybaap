@@ -14,6 +14,11 @@ class OtpService
 
     public function send(string $mobile): void
     {
+        $existing = User::query()->where('mobile', $mobile)->first();
+        if ($existing?->isBlocked()) {
+            throw new ApiException('Your account is blocked.', 403);
+        }
+
         $code = $this->code();
 
         Otp::query()->create([
