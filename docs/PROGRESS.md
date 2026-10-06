@@ -10,9 +10,9 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] `php artisan migrate --seed` pass
 
 ## Phase 2: Auth APIs
-- [ ] send-otp, verify-otp, logout, profile (get/update)
-- [ ] `SmsProviderInterface` + `LogSmsProvider`, fixed OTP 123456 local me
-- [ ] Rate limit, FormRequests, ApiResponse helper
+- [x] send-otp, verify-otp, logout, profile (get/update)
+- [x] `SmsProviderInterface` + `LogSmsProvider`, fixed OTP 123456 local me
+- [x] Rate limit, FormRequests, ApiResponse helper
 
 ## Phase 3: Content APIs
 - [ ] home, categories, videos list, video detail (`locked` flag), plans, subscription
