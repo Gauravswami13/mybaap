@@ -31,12 +31,12 @@ Reference style: Feestrack backend layout (`Http/Controllers/Api`, `Services`, F
 - [x] `docs/API.md` generate karo (endpoints, request/response examples). Backend ko `php artisan serve --host=0.0.0.0` se test karke verify karo.
 
 ## Phase 7: Flutter app (`mybaap-app`)
-- [ ] Project setup, folder structure, Dio + token interceptor, Provider, theme, routes
-- [ ] Splash -> Mobile -> OTP -> Home
-- [ ] Home: profile, banner slider, category chips, video list with lock
-- [ ] Video player (free play, paid lock -> subscription screen)
-- [ ] Subscription screen (plans + payment placeholder)
-- [ ] Loading/error/empty states, `flutter analyze` clean
+- [x] Project setup, folder structure, Dio + token interceptor, Provider, theme, routes
+- [x] Splash -> Mobile -> OTP -> Home
+- [x] Home: profile, banner slider, category chips, video list with lock
+- [x] Video player (free play, paid lock -> subscription screen)
+- [x] Subscription screen (plans + payment placeholder)
+- [x] Loading/error/empty states, `flutter analyze` clean
 
 ## Phase 8: QA + release
 - [ ] Security review: auth bypass, `playback_path` leak, missing validations. Sab fix karo.
