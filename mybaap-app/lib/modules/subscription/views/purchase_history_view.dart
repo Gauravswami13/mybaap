@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mybaap/core/color_constant.dart';
 import 'package:mybaap/core/common_widgets/custom_button.dart';
+import 'package:mybaap/core/common_widgets/green_app_bar.dart';
 import 'package:mybaap/core/common_widgets/state_message.dart';
 import 'package:mybaap/core/fonts_styles.dart';
 import 'package:mybaap/modules/subscription/providers/purchase_history_provider.dart';
@@ -28,7 +29,7 @@ class _PurchaseHistoryViewState extends State<PurchaseHistoryView> {
     final state = context.watch<PurchaseHistoryProvider>();
     return Scaffold(
       backgroundColor: ColorConstant.bgCl,
-      appBar: AppBar(title: const Text('Purchase History', style: TextStyle(fontFamily: FontsStyle.semiBold))),
+      appBar: const GreenAppBar(title: 'Purchase history'),
       body: state.loading
           ? const Center(child: CircularProgressIndicator(color: ColorConstant.primaryCl))
           : state.error != null && state.items.isEmpty
@@ -43,7 +44,7 @@ class _PurchaseHistoryViewState extends State<PurchaseHistoryView> {
                             const Text(
                               'Abhi tak koi subscription nahi',
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16),
+                              style: TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16, color: ColorConstant.darkGrayCl),
                             ),
                             const SizedBox(height: 16),
                             CustomButton(
@@ -79,16 +80,16 @@ class _PurchaseHistoryViewState extends State<PurchaseHistoryView> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorConstant.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ColorConstant.cardBorderCl),
+        color: ColorConstant.surfaceCl,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ColorConstant.lightBorderCl),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(child: Text(item.planName, style: const TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16))),
+              Expanded(child: Text(item.planName, style: const TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16, color: ColorConstant.darkGrayCl))),
               _badge(item.status),
             ],
           ),

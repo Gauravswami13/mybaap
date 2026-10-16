@@ -18,6 +18,8 @@ class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFilm;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';

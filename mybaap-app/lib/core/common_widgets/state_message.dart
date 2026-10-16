@@ -26,7 +26,7 @@ class StateMessage extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16),
+              style: const TextStyle(fontFamily: FontsStyle.semiBold, fontSize: 16, color: ColorConstant.darkGrayCl),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),

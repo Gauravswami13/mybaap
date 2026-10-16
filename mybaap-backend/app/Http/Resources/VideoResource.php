@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +12,14 @@ class VideoResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $subscribed = (bool) $request->attributes->get('subscribed', false);
+        if (! $request->attributes->has('subscribed')) {
+            $user = $request->user();
+            $request->attributes->set(
+                'subscribed',
+                $user instanceof User && $user->hasActiveSubscription(),
+            );
+        }
+        $subscribed = (bool) $request->attributes->get('subscribed');
 
         return [
             'id' => $this->id,

@@ -7,31 +7,39 @@ class HomeProvider extends ChangeNotifier {
 
   final ApiClient api;
 
+  bool bootstrapped = false;
   bool loading = false;
   String? error;
   List<BannerItem> banners = [];
   List<CategoryItem> categories = [];
   List<VideoItem> videos = [];
-  int? selectedCategoryId;
+  List<VideoItem> catalog = [];
+  bool catalogReady = false;
+  int? activeCategoryId;
+  bool categoryLoading = false;
+  bool categoryReady = false;
+  String? categoryError;
+  List<VideoItem> categoryVideos = [];
+
+  Future<void> bootstrap(Future<void> Function() loadProfile) async {
+    if (bootstrapped) return;
+    bootstrapped = true;
+    await Future.wait([load(), loadProfile()]);
+  }
 
   Future<void> load() async {
     loading = true;
     error = null;
     notifyListeners();
     try {
-      if (selectedCategoryId == null) {
-        final data = await api.get('/home');
-        if (data is Map) {
-          banners = _list(data['banners']).map(BannerItem.fromJson).toList();
-          categories = _list(data['categories']).map(CategoryItem.fromJson).toList();
-          videos = _list(data['videos']).map(VideoItem.fromJson).toList();
-        }
-      } else {
-        final data = await api.get('/videos', query: {'category_id': selectedCategoryId});
-        if (data is Map) {
-          videos = _list(data['videos']).map(VideoItem.fromJson).toList();
-        }
+      final data = await api.get('/home');
+      if (data is Map) {
+        banners = _list(data['banners']).map(BannerItem.fromJson).toList();
+        categories = _list(data['categories']).map(CategoryItem.fromJson).toList();
+        videos = _list(data['videos']).map(VideoItem.fromJson).toList();
       }
+      categoryReady = false;
+      catalogReady = false;
       loading = false;
       notifyListeners();
     } on ApiException catch (exception) {
@@ -45,9 +53,50 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> selectCategory(int? id) async {
-    selectedCategoryId = id;
-    await load();
+  Future<void> loadCatalog({bool force = false}) async {
+    if (!force && catalogReady) return;
+    try {
+      final data = await api.get('/videos');
+      if (data is Map) {
+        catalog = _list(data['videos']).map(VideoItem.fromJson).toList();
+      }
+      catalogReady = true;
+      notifyListeners();
+    } on ApiException {
+      catalogReady = false;
+    }
+  }
+
+  Future<void> loadCategory(int id, {bool force = false}) async {
+    if (!force && activeCategoryId == id && (categoryLoading || categoryReady)) return;
+    activeCategoryId = id;
+    categoryLoading = true;
+    categoryReady = false;
+    categoryError = null;
+    categoryVideos = [];
+    notifyListeners();
+    try {
+      final data = await api.get('/videos', query: {'category_id': id});
+      if (activeCategoryId != id) return;
+      if (data is Map) {
+        categoryVideos = _list(data['videos']).map(VideoItem.fromJson).toList();
+      }
+      categoryLoading = false;
+      categoryReady = true;
+      notifyListeners();
+    } on ApiException catch (exception) {
+      if (activeCategoryId != id) return;
+      categoryLoading = false;
+      categoryReady = true;
+      categoryError = exception.message;
+      notifyListeners();
+    } catch (_) {
+      if (activeCategoryId != id) return;
+      categoryLoading = false;
+      categoryReady = true;
+      categoryError = 'Unable to load videos.';
+      notifyListeners();
+    }
   }
 
   Future<String> playbackUrl(int id) async {

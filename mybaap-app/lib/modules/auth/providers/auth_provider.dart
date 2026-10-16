@@ -1,4 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mybaap/modules/auth/models/user_model.dart';
 import 'package:mybaap/services/api_client.dart';
 import 'package:mybaap/services/token_store.dart';
@@ -13,6 +16,12 @@ class AuthProvider extends ChangeNotifier {
   SubscriptionStatus subscription = const SubscriptionStatus(isActive: false);
   bool loading = false;
   String? error;
+  String pendingMobile = '';
+  int otpSeconds = 0;
+  final mobileController = TextEditingController();
+  final otpController = TextEditingController();
+  String? pendingPhotoPath;
+  Timer? _otpTimer;
 
   Future<bool> hasSession() async {
     final token = await tokenStore.read();
@@ -24,6 +33,66 @@ class AuthProvider extends ChangeNotifier {
       await tokenStore.clear();
       return false;
     }
+  }
+
+  Future<bool> continueWithMobile() async {
+    final mobile = mobileController.text.trim();
+    if (!RegExp(r'^[6-9][0-9]{9}$').hasMatch(mobile)) {
+      error = 'Enter a valid 10 digit mobile number.';
+      notifyListeners();
+      return false;
+    }
+    pendingMobile = mobile;
+    try {
+      await sendOtp(mobile);
+      otpController.clear();
+      _startOtpTimer();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> submitOtp() async {
+    final code = otpController.text.trim();
+    if (code.length != 6) {
+      error = 'Enter the 6 digit OTP.';
+      notifyListeners();
+      return false;
+    }
+    try {
+      await verifyOtp(pendingMobile, code);
+      _otpTimer?.cancel();
+      otpSeconds = 0;
+      otpController.clear();
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> resendOtp() async {
+    if (otpSeconds > 0 || loading || pendingMobile.isEmpty) return;
+    try {
+      await sendOtp(pendingMobile);
+      _startOtpTimer();
+    } catch (_) {}
+  }
+
+  void _startOtpTimer() {
+    _otpTimer?.cancel();
+    otpSeconds = 30;
+    notifyListeners();
+    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (otpSeconds <= 1) {
+        otpSeconds = 0;
+        timer.cancel();
+      } else {
+        otpSeconds -= 1;
+      }
+      notifyListeners();
+    });
   }
 
   Future<void> sendOtp(String mobile) async {
@@ -41,6 +110,10 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> loadProfile() async {
     final data = await _run(() => api.get('/profile'));
+    _applyProfile(data);
+  }
+
+  void _applyProfile(dynamic data) {
     if (data is Map && data['user'] is Map) {
       user = UserModel.fromJson(Map<String, dynamic>.from(data['user'] as Map));
       subscription = SubscriptionStatus.fromProfile(data);
@@ -49,12 +122,29 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> updateName(String name) async {
-    final data = await _run(() => api.put('/profile', body: {'name': name}));
-    if (data is Map && data['user'] is Map) {
-      user = UserModel.fromJson(Map<String, dynamic>.from(data['user'] as Map));
-      subscription = SubscriptionStatus.fromProfile(data);
+    await saveProfile(name);
+  }
+
+  Future<void> pickPhoto() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 1200);
+    if (file == null) return;
+    pendingPhotoPath = file.path;
+    notifyListeners();
+  }
+
+  Future<void> saveProfile(String name) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      error = 'Name is required';
       notifyListeners();
+      throw ApiException('Name is required');
     }
+    final data = pendingPhotoPath == null
+        ? await _run(() => api.put('/profile', body: {'name': trimmed}))
+        : await _run(() => api.upload('/profile', fields: {'name': trimmed}, filePath: pendingPhotoPath));
+    _applyProfile(data);
+    pendingPhotoPath = null;
+    notifyListeners();
   }
 
   Future<void> deleteAccount() async {
@@ -73,6 +163,14 @@ class AuthProvider extends ChangeNotifier {
     user = null;
     subscription = const SubscriptionStatus(isActive: false);
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _otpTimer?.cancel();
+    mobileController.dispose();
+    otpController.dispose();
+    super.dispose();
   }
 
   Future<dynamic> _run(Future<dynamic> Function() call) async {

@@ -18,9 +18,11 @@ class SubscriptionPlanResource extends Resource
 {
     protected static ?string $model = SubscriptionPlan::class;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Billing';
+    protected static string|\UnitEnum|null $navigationGroup = 'Subscription';
 
     protected static ?string $navigationLabel = 'Plans';
 

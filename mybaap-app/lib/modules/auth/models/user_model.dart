@@ -4,11 +4,13 @@ class UserModel {
     required this.mobile,
     required this.status,
     this.name,
+    this.photoUrl,
   });
 
   final int id;
   final String mobile;
   final String? name;
+  final String? photoUrl;
   final String status;
 
   String get displayName => (name == null || name!.trim().isEmpty) ? mobile : name!.trim();
@@ -18,6 +20,7 @@ class UserModel {
       id: json['id'] as int,
       mobile: json['mobile'] as String,
       name: json['name'] as String?,
+      photoUrl: json['photo_url'] as String?,
       status: json['status'] as String? ?? 'active',
     );
   }

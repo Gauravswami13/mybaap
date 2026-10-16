@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mybaap/core/theme/app_theme.dart';
+import 'package:mybaap/modules/account/providers/notification_provider.dart';
 import 'package:mybaap/modules/account/providers/share_provider.dart';
 import 'package:mybaap/modules/account/views/account_view.dart';
+import 'package:mybaap/modules/account/views/edit_profile_view.dart';
+import 'package:mybaap/modules/account/views/notifications_view.dart';
 import 'package:mybaap/modules/auth/providers/auth_provider.dart';
 import 'package:mybaap/modules/auth/views/mobile_view.dart';
 import 'package:mybaap/modules/auth/views/otp_view.dart';
@@ -11,7 +14,10 @@ import 'package:mybaap/modules/help/views/cms_page_view.dart';
 import 'package:mybaap/modules/help/views/faq_view.dart';
 import 'package:mybaap/modules/home/models/catalog_models.dart';
 import 'package:mybaap/modules/home/providers/home_provider.dart';
+import 'package:mybaap/modules/home/views/category_videos_view.dart';
 import 'package:mybaap/modules/home/views/home_view.dart';
+import 'package:mybaap/modules/home/views/video_detail_view.dart';
+import 'package:mybaap/modules/player/providers/player_provider.dart';
 import 'package:mybaap/modules/player/views/player_view.dart';
 import 'package:mybaap/modules/subscription/providers/purchase_history_provider.dart';
 import 'package:mybaap/modules/subscription/providers/subscription_provider.dart';
@@ -45,6 +51,7 @@ class MyBaapApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PurchaseHistoryProvider(api)),
         ChangeNotifierProvider(create: (_) => ContentProvider(api)),
         ChangeNotifierProvider(create: (_) => ShareProvider(api)),
+        ChangeNotifierProvider(create: (_) => NotificationProvider(api)),
       ],
       child: MaterialApp(
         title: 'MyBaap',
@@ -61,9 +68,20 @@ class MyBaapApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => OtpView(mobile: mobile));
             case AppRoutes.home:
               return MaterialPageRoute(builder: (_) => const HomeView());
+            case AppRoutes.categoryVideos:
+              final category = settings.arguments as CategoryItem;
+              return MaterialPageRoute(builder: (_) => CategoryVideosView(category: category));
+            case AppRoutes.videoDetail:
+              final detail = settings.arguments as VideoItem;
+              return MaterialPageRoute(builder: (_) => VideoDetailView(video: detail));
             case AppRoutes.player:
               final video = settings.arguments as VideoItem;
-              return MaterialPageRoute(builder: (_) => PlayerView(video: video));
+              return MaterialPageRoute(
+                builder: (context) => ChangeNotifierProvider(
+                  create: (context) => PlayerProvider(context.read<HomeProvider>().api, video)..open(),
+                  child: const PlayerView(),
+                ),
+              );
             case AppRoutes.subscription:
               return MaterialPageRoute(builder: (_) => const SubscriptionView());
             case AppRoutes.account:
@@ -75,6 +93,10 @@ class MyBaapApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => const FaqView());
             case AppRoutes.purchases:
               return MaterialPageRoute(builder: (_) => const PurchaseHistoryView());
+            case AppRoutes.editProfile:
+              return MaterialPageRoute(builder: (_) => const EditProfileView());
+            case AppRoutes.notifications:
+              return MaterialPageRoute(builder: (_) => const NotificationsView());
             case AppRoutes.splash:
             default:
               return MaterialPageRoute(builder: (_) => const SplashView());

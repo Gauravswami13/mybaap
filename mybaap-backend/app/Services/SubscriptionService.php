@@ -33,7 +33,13 @@ class SubscriptionService
 
     public function current(User $user): ?UserSubscription
     {
-        return $user->activeSubscription()->with('plan')->first();
+        return $user->subscriptions()
+            ->with('plan')
+            ->where('status', UserSubscription::STATUS_ACTIVE)
+            ->where('end_date', '>=', now()->toDateString())
+            ->orderByDesc('end_date')
+            ->orderByDesc('id')
+            ->first();
     }
 
     public function hasActive(User $user): bool

@@ -9,6 +9,7 @@ use App\Http\Resources\UserSubscriptionResource;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -25,9 +26,14 @@ class ProfileController extends Controller
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         $user = $request->user();
-        $user->update([
-            'name' => $request->string('name')->toString(),
-        ]);
+        $user->name = $request->string('name')->toString();
+        if ($request->hasFile('photo')) {
+            if ($user->photo) {
+                Storage::disk('public')->delete($user->photo);
+            }
+            $user->photo = $request->file('photo')->store('profiles', 'public');
+        }
+        $user->save();
         $user->load('activeSubscription.plan');
 
         return $this->ok($this->payload($user), 'Profile updated.');

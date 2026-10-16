@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mybaap/core/color_constant.dart';
@@ -7,115 +5,145 @@ import 'package:mybaap/core/common_widgets/custom_button.dart';
 import 'package:mybaap/core/fonts_styles.dart';
 import 'package:mybaap/modules/auth/providers/auth_provider.dart';
 import 'package:mybaap/routes/app_routes.dart';
-import 'package:mybaap/services/api_client.dart';
 import 'package:provider/provider.dart';
 
-class OtpView extends StatefulWidget {
+class OtpView extends StatelessWidget {
   const OtpView({super.key, required this.mobile});
 
   final String mobile;
 
-  @override
-  State<OtpView> createState() => _OtpViewState();
-}
-
-class _OtpViewState extends State<OtpView> {
-  final _otp = TextEditingController();
-  String? _error;
-  int _seconds = 30;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-    setState(() => _seconds = 30);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds <= 1) {
-        timer.cancel();
-        setState(() => _seconds = 0);
-      } else {
-        setState(() => _seconds -= 1);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _otp.dispose();
-    super.dispose();
-  }
-
-  Future<void> _verify() async {
-    if (_otp.text.trim().length != 6) {
-      setState(() => _error = 'Enter the 6 digit OTP.');
-      return;
-    }
-    setState(() => _error = null);
-    try {
-      await context.read<AuthProvider>().verifyOtp(widget.mobile, _otp.text.trim());
-      if (!mounted) return;
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
-    } on ApiException catch (error) {
-      setState(() => _error = error.message);
-    }
-  }
-
-  Future<void> _resend() async {
-    try {
-      await context.read<AuthProvider>().sendOtp(widget.mobile);
-      _startTimer();
-    } on ApiException catch (error) {
-      setState(() => _error = error.message);
-    }
+  String get _masked {
+    if (mobile.length < 4) return mobile;
+    return '${mobile.substring(0, 2)}******${mobile.substring(mobile.length - 2)}';
   }
 
   @override
   Widget build(BuildContext context) {
-    final loading = context.watch<AuthProvider>().loading;
+    final auth = context.watch<AuthProvider>();
+    final waiting = auth.otpSeconds > 0;
     return Scaffold(
-      backgroundColor: ColorConstant.white,
-      appBar: AppBar(title: const Text('Verify OTP', style: TextStyle(fontFamily: FontsStyle.semiBold))),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Code sent to ${widget.mobile}', style: const TextStyle(color: ColorConstant.bodyTextCl)),
-            const SizedBox(height: 8),
-            const Text('Local testing OTP is 123456.', style: TextStyle(color: ColorConstant.hintTextCl, fontSize: 12)),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _otp,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              style: const TextStyle(fontFamily: FontsStyle.bold, fontSize: 24, letterSpacing: 8),
-              decoration: InputDecoration(
-                counterText: '',
-                hintText: '••••••',
-                filled: true,
-                fillColor: ColorConstant.primaryLightCl,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+      backgroundColor: ColorConstant.bgCl,
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: ColorConstant.white, size: 18),
               ),
             ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              Text(_error!, style: const TextStyle(color: ColorConstant.errorCl)),
+          ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: ColorConstant.primaryCl,
+                child: Icon(Icons.play_arrow_rounded, color: ColorConstant.white, size: 20),
+              ),
+              SizedBox(width: 8),
+              Text('MYBAAP', style: TextStyle(color: ColorConstant.primaryCl, fontFamily: FontsStyle.bold, fontSize: 22, letterSpacing: 0.6)),
             ],
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: _seconds == 0 && !loading ? _resend : null,
-              child: Text(_seconds == 0 ? 'Resend OTP' : 'Resend in ${_seconds}s'),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(32, 28, 32, 24),
+              child: Column(
+                children: [
+                  const Text(
+                    'Verify OTP',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: ColorConstant.darkGrayCl, fontFamily: FontsStyle.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Text.rich(
+                    TextSpan(
+                      text: "We've sent a 6-digit OTP to your Mobile\nNumber $_masked",
+                      style: const TextStyle(fontSize: 12, color: ColorConstant.lightGrayIcCl, height: 1.4, fontFamily: FontsStyle.regular),
+                      children: [
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: GestureDetector(
+                            onTap: () => Navigator.maybePop(context),
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 4),
+                              child: Icon(Icons.edit_outlined, size: 15, color: ColorConstant.primaryCl),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  _OtpBoxes(controller: auth.otpController),
+                  if (auth.error != null) ...[
+                    const SizedBox(height: 12),
+                    Text(auth.error!, textAlign: TextAlign.center, style: const TextStyle(color: ColorConstant.errorCl, fontSize: 12)),
+                  ],
+                  const SizedBox(height: 36),
+                  CustomButton(
+                    text: auth.loading ? 'Checking...' : 'Verify OTP',
+                    enabled: !auth.loading,
+                    onPressed: () async {
+                      final ok = await context.read<AuthProvider>().submitOtp();
+                      if (!ok || !context.mounted) return;
+                      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+                    },
+                  ),
+                  const SizedBox(height: 28),
+                  GestureDetector(
+                    onTap: waiting || auth.loading ? null : () => context.read<AuthProvider>().resendOtp(),
+                    child: Text(
+                      waiting ? 'Resend OTP in ${auth.otpSeconds}s' : 'Resend OTP',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: FontsStyle.semiBold,
+                        color: waiting ? ColorConstant.lightGrayIcCl : ColorConstant.bodyTextCl,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
-            CustomButton(text: loading ? 'Checking...' : 'Verify', enabled: !loading, onPressed: _verify),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OtpBoxes extends StatelessWidget {
+  const _OtpBoxes({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      decoration: BoxDecoration(
+        color: ColorConstant.surfaceCl,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorConstant.lightGrayCl1),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        maxLength: 6,
+        textAlign: TextAlign.center,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 16, color: ColorConstant.darkGrayCl, fontFamily: FontsStyle.bold),
+        decoration: const InputDecoration(
+          counterText: '',
+          hintText: '______',
+          hintStyle: TextStyle(letterSpacing: 16, color: ColorConstant.hintTextCl),
+          border: UnderlineInputBorder(borderSide: BorderSide(color: ColorConstant.primaryCl)),
+          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorConstant.lightGrayCl1)),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorConstant.primaryCl)),
         ),
       ),
     );

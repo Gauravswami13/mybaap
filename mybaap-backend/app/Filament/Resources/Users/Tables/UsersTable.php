@@ -6,6 +6,7 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
@@ -30,6 +31,11 @@ class UsersTable
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('status')
+                    ->options([
+                        User::STATUS_ACTIVE => 'Active',
+                        User::STATUS_BLOCKED => 'Blocked',
+                    ]),
                 TrashedFilter::make(),
             ])
             ->recordActions([

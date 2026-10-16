@@ -37,12 +37,25 @@ class AdminPanelTest extends TestCase
         Livewire::actingAs($admin, 'admin')
             ->test(DashboardStats::class)
             ->assertSee('Active subscriptions')
-            ->assertSee('Free videos')
-            ->assertSee('Paid videos');
+            ->assertSee('Total users')
+            ->assertSee('Active plans');
 
         $this->actingAs($admin, 'admin')->get('/admin/users')->assertOk();
         $this->actingAs($admin, 'admin')->get('/admin/videos')->assertOk();
         $this->actingAs($admin, 'admin')->get('/admin/user-subscriptions')->assertOk();
         $this->actingAs($admin, 'admin')->get('/admin/categories')->assertOk();
+        $this->actingAs($admin, 'admin')->get('/admin')->assertSee('Revenue Overview')->assertSee('Recent users');
+        $this->actingAs($admin, 'admin')->get('/admin/api-docs')
+            ->assertOk()
+            ->assertSee('MyBaap API')
+            ->assertSee('/auth/send-otp')
+            ->assertSee('/payments/razorpay/order')
+            ->assertSee('/videos/{id}/playback');
+        $this->actingAs($admin, 'admin')->get('/admin/profile')->assertOk()->assertSee('Save profile');
+        $this->actingAs($admin, 'admin')->get('/admin/revenue-months')->assertOk()->assertSee('Month');
+        $this->actingAs($admin, 'admin')->get('/admin/manage-app-settings')->assertOk()->assertSee('Branding')->assertSee('App control');
+        $this->actingAs($admin, 'admin')->get('/admin/notifications')->assertOk()->assertSee('Save notification');
+        $this->actingAs($admin, 'admin')->get('/admin/account-deletions')->assertOk()->assertSee('No deleted accounts');
+        $this->actingAs($admin, 'admin')->get('/admin/reports')->assertOk()->assertSee('Revenue by plan');
     }
 }

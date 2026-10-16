@@ -7,12 +7,14 @@ class AppTheme {
   static ThemeData light() {
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: ColorConstant.primaryCl,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
         primary: ColorConstant.primaryCl,
-        surface: ColorConstant.white,
+        surface: ColorConstant.surfaceCl,
+        secondary: ColorConstant.primaryCl,
       ),
       scaffoldBackgroundColor: ColorConstant.bgCl,
+      bottomSheetTheme: const BottomSheetThemeData(elevation: 0, backgroundColor: ColorConstant.surfaceCl),
     );
     return base.copyWith(
       textTheme: base.textTheme.apply(
@@ -22,11 +24,11 @@ class AppTheme {
       ),
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: ColorConstant.white,
+        backgroundColor: ColorConstant.bgCl,
         foregroundColor: ColorConstant.darkGrayCl,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
         ),
       ),
     );

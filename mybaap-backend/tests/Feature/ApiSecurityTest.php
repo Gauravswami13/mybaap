@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Models\UserSubscription;
 use App\Models\Video;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -51,6 +52,43 @@ class ApiSecurityTest extends TestCase
         $this->withToken($token)
             ->getJson('/api/v1/videos/'.$paid->id.'/playback')
             ->assertForbidden();
+    }
+
+    public function test_active_subscription_unlocks_paid_playback(): void
+    {
+        [, $paid] = $this->videos();
+        Storage::disk('local')->put($paid->playback_path, 'sample');
+        $plan = SubscriptionPlan::query()->create([
+            'name' => 'Monthly',
+            'price' => 99,
+            'duration_days' => 30,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+        $user = User::factory()->create(['mobile' => '9000000001']);
+        $user->subscriptions()->create([
+            'plan_id' => $plan->id,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(30)->toDateString(),
+            'status' => UserSubscription::STATUS_ACTIVE,
+            'payment_ref' => 'pay_unlock',
+        ]);
+        $token = $user->createToken('android')->plainTextToken;
+
+        $list = $this->withToken($token)
+            ->getJson('/api/v1/videos?category_id='.$paid->category_id)
+            ->assertOk();
+        $row = collect($list->json('data.videos'))->firstWhere('id', $paid->id);
+        $this->assertFalse($row['locked']);
+
+        $this->withToken($token)->getJson('/api/v1/profile')
+            ->assertOk()
+            ->assertJsonPath('data.subscription.is_active', true);
+
+        $this->withToken($token)
+            ->getJson('/api/v1/videos/'.$paid->id.'/playback')
+            ->assertOk()
+            ->assertJsonPath('message', 'Playback URL ready.');
     }
 
     public function test_blocked_user_cannot_request_otp_or_use_an_existing_token(): void

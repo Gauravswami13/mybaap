@@ -1,17 +1,21 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\AppController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\PaymentWebhookController;
 use App\Http\Controllers\Api\PlaybackController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\RazorpayController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/settings/public', [SettingsController::class, 'show']);
+Route::get('/app/bootstrap', [AppController::class, 'bootstrap']);
 Route::get('/pages/{slug}', [ContentController::class, 'page'])->where('slug', '[a-z0-9\-]+');
 Route::get('/faqs', [ContentController::class, 'faqs']);
 
@@ -28,7 +32,10 @@ Route::delete('/account', [AccountController::class, 'destroy'])->middleware('au
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [ProfileController::class, 'show']);
-    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::match(['put', 'post'], '/profile', [ProfileController::class, 'update']);
+    Route::post('/payments/razorpay/order', [RazorpayController::class, 'order']);
+    Route::post('/payments/razorpay/verify', [RazorpayController::class, 'verify']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
 
     Route::get('/home', [CatalogController::class, 'home']);
     Route::get('/categories', [CatalogController::class, 'categories']);

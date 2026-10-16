@@ -24,6 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'mobile',
         'name',
+        'photo',
         'status',
     ];
 
@@ -32,17 +33,28 @@ class User extends Authenticatable
         return $this->hasMany(UserSubscription::class);
     }
 
+    public function latestSubscription(): HasOne
+    {
+        return $this->hasOne(UserSubscription::class)->latestOfMany();
+    }
+
     public function activeSubscription(): HasOne
     {
-        return $this->hasOne(UserSubscription::class)
-            ->where('status', UserSubscription::STATUS_ACTIVE)
-            ->whereDate('end_date', '>=', now()->toDateString())
-            ->latestOfMany('end_date');
+        return $this->hasOne(UserSubscription::class)->ofMany(
+            ['end_date' => 'max', 'id' => 'max'],
+            function ($query) {
+                $query->where('status', UserSubscription::STATUS_ACTIVE)
+                    ->where('end_date', '>=', now()->toDateString());
+            },
+        );
     }
 
     public function hasActiveSubscription(): bool
     {
-        return $this->activeSubscription()->exists();
+        return $this->subscriptions()
+            ->where('status', UserSubscription::STATUS_ACTIVE)
+            ->where('end_date', '>=', now()->toDateString())
+            ->exists();
     }
 
     public function isBlocked(): bool

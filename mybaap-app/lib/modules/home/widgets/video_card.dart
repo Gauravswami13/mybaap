@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mybaap/core/common_widgets/app_image.dart';
 import 'package:mybaap/core/color_constant.dart';
 import 'package:mybaap/core/fonts_styles.dart';
 import 'package:mybaap/modules/home/models/catalog_models.dart';
@@ -12,15 +13,15 @@ class VideoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      color: ColorConstant.white,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      color: ColorConstant.surfaceCl,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: ColorConstant.cardBorderCl),
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: ColorConstant.lightBorderCl),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -31,13 +32,7 @@ class VideoCard extends StatelessWidget {
                 child: SizedBox(
                   width: 110,
                   height: 72,
-                  child: video.thumbnailUrl == null
-                      ? const ColoredBox(color: ColorConstant.primaryMintCl)
-                      : Image.network(
-                          video.thumbnailUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => const ColoredBox(color: ColorConstant.primaryMintCl),
-                        ),
+                  child: AppImage(url: video.thumbnailUrl, icon: Icons.play_circle_outline),
                 ),
               ),
               const SizedBox(width: 12),
@@ -62,12 +57,12 @@ class VideoCard extends StatelessWidget {
                           ),
                           child: Text(
                             video.isPaid ? 'Paid' : 'Free',
-                            style: const TextStyle(fontSize: 11, fontFamily: FontsStyle.medium, color: ColorConstant.primaryDarkCl),
+                            style: const TextStyle(fontSize: 11, fontFamily: FontsStyle.medium, color: ColorConstant.white),
                           ),
                         ),
                         if (video.locked) ...[
                           const SizedBox(width: 6),
-                          const Icon(Icons.lock, size: 16, color: ColorConstant.primaryDarkCl),
+                          const Icon(Icons.lock, size: 16, color: ColorConstant.white),
                         ],
                       ],
                     ),
@@ -76,6 +71,77 @@ class VideoCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class VideoPoster extends StatelessWidget {
+  const VideoPoster({super.key, required this.video, required this.onTap, this.width = 132});
+
+  final VideoItem video;
+  final VoidCallback onTap;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AspectRatio(
+                aspectRatio: 2 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    AppImage(url: video.thumbnailUrl, icon: Icons.movie_outlined),
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Color(0xCC010A0F)],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: video.locked ? ColorConstant.primaryCl : const Color(0xCC10181D),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          video.locked ? 'LOCK' : (video.isPaid ? 'PAID' : 'FREE'),
+                          style: const TextStyle(color: ColorConstant.white, fontSize: 10, fontFamily: FontsStyle.bold),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 8,
+                      right: 8,
+                      bottom: 8,
+                      child: Text(
+                        video.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: ColorConstant.white, fontFamily: FontsStyle.semiBold, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

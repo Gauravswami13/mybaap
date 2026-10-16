@@ -1,6 +1,10 @@
 # MyBaap API
 
-Base URL: `http://127.0.0.1:8000/api/v1`
+Live base URL: `https://demo.exonex.ai/api/v1`
+
+Local base URL: `http://127.0.0.1:8000/api/v1`
+
+The admin page `/admin/api-docs` reads `mybaap-backend/resources/api/catalog.md`. Keep that file and this one in sync when an endpoint changes.
 
 Run the API so a phone on the same network can reach it:
 
@@ -80,7 +84,7 @@ Auth required. Revokes the current token.
   "success": true,
   "message": "OK",
   "data": {
-    "user": { "id": 1, "mobile": "9876543210", "name": "Gaurav", "status": "active" },
+    "user": { "id": 1, "mobile": "9876543210", "name": "Gaurav", "photo_url": null, "status": "active" },
     "subscription": null
   }
 }
@@ -94,7 +98,7 @@ When a subscription is active, `subscription` includes `id`, `plan_id`, `plan_na
 { "name": "Gaurav" }
 ```
 
-Returns the same payload as GET /profile.
+Optional multipart field `photo` (jpeg/png, max 2 MB). Send it with `POST /profile`. Returns the same payload as GET /profile. `photo_url` is null until a photo is saved.
 
 ## Content
 
@@ -111,7 +115,7 @@ All content routes require auth. Inactive categories, videos, banners, and plans
       { "id": 1, "title": "Watch free demos", "image_url": "http://127.0.0.1:8000/storage/banners/banner-1.jpg", "link": null, "sort_order": 1 }
     ],
     "categories": [
-      { "id": 1, "name": "Comedy", "slug": "comedy", "sort_order": 1 }
+      { "id": 1, "name": "Comedy", "slug": "comedy", "image_url": null, "sort_order": 1 }
     ],
     "videos": [
       {
@@ -219,6 +223,31 @@ Paid video without a subscription: `403`.
 
 Open `data.url` directly in the player. It does not need the bearer token. A missing or edited signature returns `403`. The URL expires after 5 minutes.
 
+## Razorpay test checkout
+
+Auth required. Keys come from `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
+
+### POST /payments/razorpay/order
+
+```json
+{ "plan_id": 1 }
+```
+
+`data` contains `key_id`, `order_id`, `amount` (paise), `currency`, and `plan_name`.
+
+### POST /payments/razorpay/verify
+
+```json
+{
+  "plan_id": 1,
+  "razorpay_order_id": "order_test",
+  "razorpay_payment_id": "pay_test",
+  "razorpay_signature": "hmac"
+}
+```
+
+The server checks the signature, the Razorpay payment, and that the order notes match this user and plan. A valid payment activates the subscription.
+
 ## Payment webhook
 
 ### POST /payments/webhook
@@ -230,6 +259,16 @@ No bearer token. Header `X-Webhook-Signature` is HMAC-SHA256 of the raw body usi
 ```
 
 `200` activates or extends the user's subscription. The same `payment_ref` is idempotent. `401` when the signature is wrong.
+
+## App bootstrap
+
+### GET /app/bootstrap
+
+No token. Public app settings only. Secrets such as payment keys and Firebase JSON are not included.
+
+`data` includes `app_name`, colors, support contact, currency, `maintenance_mode`, `force_update`, version fields, `android_url`, and a `features` object.
+
+When `maintenance_mode` is on, other API calls return `503`. Bootstrap, public settings, and the payment webhook stay available.
 
 ## Public settings
 
@@ -249,6 +288,24 @@ No token. Used by Share App.
 ```
 
 Admin edits both values at `/admin/manage-app-settings`.
+
+## Notifications
+
+### GET /notifications
+
+Auth required. Latest 50 rows for this user: audience `all`, plus audience `one` only when `user_id` is the signed-in user. Another user's private notification is never included.
+
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": [
+    { "id": 1, "title": "New video", "body": "A new clip is live.", "created_at": "2026-10-07T12:00:00+00:00" }
+  ]
+}
+```
+
+Admin composes these at `/admin/notifications`. Phone push is not sent until Firebase is configured.
 
 ## Account
 

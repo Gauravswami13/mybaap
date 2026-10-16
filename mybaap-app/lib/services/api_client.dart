@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:mybaap/core/app_config.dart';
 import 'package:mybaap/routes/app_routes.dart';
+import 'package:mybaap/services/api_logs.dart';
 import 'package:mybaap/services/token_store.dart';
 
 class ApiException implements Exception {
   ApiException(this.message);
+
   final String message;
 
   @override
@@ -51,6 +53,8 @@ class ApiClient {
   }
 
   Future<dynamic> post(String path, {Map<String, dynamic>? body}) async {
+    Log.console(body);
+    Log.console(path);
     return _send(() => dio.post(path, data: body));
   }
 
@@ -60,6 +64,14 @@ class ApiClient {
 
   Future<dynamic> delete(String path, {Map<String, dynamic>? body}) async {
     return _send(() => dio.delete(path, data: body));
+  }
+
+  Future<dynamic> upload(String path, {required Map<String, String> fields, String? filePath, String fileField = 'photo'}) async {
+    final form = FormData.fromMap({
+      ...fields,
+      if (filePath != null) fileField: await MultipartFile.fromFile(filePath),
+    });
+    return _send(() => dio.post(path, data: form));
   }
 
   Future<dynamic> _send(Future<Response<dynamic>> Function() call) async {

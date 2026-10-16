@@ -29,11 +29,22 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: ColorConstant.primaryCl,
+      backgroundColor: ColorConstant.bgCl,
       body: Center(
-        child: Text(
-          'MyBaap',
-          style: TextStyle(color: ColorConstant.white, fontFamily: FontsStyle.bold, fontSize: 36),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: ColorConstant.primaryCl,
+              child: Icon(Icons.play_arrow_rounded, color: ColorConstant.white),
+            ),
+            SizedBox(width: 10),
+            Text(
+              'MYBAAP',
+              style: TextStyle(color: ColorConstant.primaryCl, fontFamily: FontsStyle.bold, fontSize: 32, letterSpacing: 1),
+            ),
+          ],
         ),
       ),
     );
